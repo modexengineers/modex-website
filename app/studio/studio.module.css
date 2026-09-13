@@ -1,0 +1,422 @@
+.aboutSection,
+.capabilitiesSection,
+.approachSection,
+.ctaSection{
+  background:var(--paper);
+}
+
+.aboutSection{
+  padding:clamp(76px,8vw,118px) 0;
+}
+
+.aboutGrid{
+  display:grid;
+  grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
+  gap:clamp(46px,7vw,108px);
+  align-items:center;
+}
+
+.aboutCopy h2,
+.sectionLead h2,
+.approachIntro h2,
+.locationGrid h2,
+.ctaGrid h2{
+  margin:0;
+  font-family:var(--sans);
+  font-weight:520;
+  letter-spacing:-.055em;
+  line-height:.96;
+}
+
+.aboutCopy h2{
+  font-size:clamp(48px,5.2vw,82px);
+  margin-bottom:30px;
+}
+
+.aboutCopy h2 em,
+.sectionLead h2 em,
+.approachIntro h2 em,
+.locationGrid h2 em,
+.ctaGrid h2 em{
+  font-style:italic;
+  font-weight:420;
+  color:var(--purple);
+}
+
+.aboutCopy > p:not(:first-child){
+  max-width:650px;
+  margin:0 0 18px;
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.82;
+}
+
+.officeWrap{
+  min-width:0;
+}
+
+.officeImage{
+  position:relative;
+  aspect-ratio:4/4.65;
+  overflow:hidden;
+  background:var(--paper-2);
+}
+
+.officeImage img{
+  object-fit:cover;
+  transition:transform .7s ease;
+}
+
+.officeWrap:hover .officeImage img{
+  transform:scale(1.018);
+}
+
+.officeCaption{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  padding:14px 0 0;
+  border-top:1px solid var(--line);
+  margin-top:14px;
+  color:#8a8490;
+  font-size:8px;
+  letter-spacing:.16em;
+}
+
+.capabilitiesSection{
+  padding:clamp(72px,7.5vw,110px) 0 clamp(82px,9vw,132px);
+  border-top:1px solid var(--line);
+}
+
+.sectionLead{
+  display:grid;
+  grid-template-columns:minmax(0,1.25fr) minmax(260px,.55fr);
+  column-gap:clamp(40px,7vw,100px);
+  align-items:end;
+  margin-bottom:clamp(44px,5vw,72px);
+}
+
+.sectionLead :global(.kicker){
+  grid-column:1 / -1;
+}
+
+.sectionLead h2{
+  font-size:clamp(48px,5vw,78px);
+}
+
+.sectionLead > p:last-child{
+  margin:0 0 5px;
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.8;
+}
+
+.capabilityGrid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+
+.capabilityCard{
+  position:relative;
+  min-height:330px;
+  padding:30px 30px 34px;
+  border-right:1px solid var(--line);
+  overflow:hidden;
+}
+
+.capabilityCard:last-child{
+  border-right:0;
+}
+
+.cardIndex{
+  display:block;
+  margin-bottom:76px;
+  color:var(--purple);
+  font-size:10px;
+  font-weight:750;
+  letter-spacing:.18em;
+}
+
+.capabilityCard h3{
+  margin:0 0 18px;
+  font-family:var(--sans);
+  font-size:clamp(30px,2.6vw,42px);
+  font-weight:540;
+  letter-spacing:-.045em;
+}
+
+.capabilityCard p{
+  margin:0;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.75;
+  max-width:360px;
+}
+
+.cardLine{
+  position:absolute;
+  left:30px;
+  right:30px;
+  bottom:0;
+  height:3px;
+  background:linear-gradient(90deg,var(--purple),var(--lilac));
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform .45s ease;
+}
+
+.capabilityCard:hover .cardLine{
+  transform:scaleX(1);
+}
+
+.approachSection{
+  padding:clamp(78px,8vw,120px) 0;
+  background:#f0edf8;
+}
+
+.approachGrid{
+  display:grid;
+  grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);
+  gap:clamp(50px,8vw,120px);
+  align-items:start;
+}
+
+.approachIntro{
+  position:sticky;
+  top:110px;
+}
+
+.approachIntro h2{
+  font-size:clamp(48px,4.8vw,76px);
+  margin-bottom:28px;
+}
+
+.approachIntro > p:last-child{
+  margin:0;
+  max-width:520px;
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.8;
+}
+
+.principleList{
+  border-top:1px solid rgba(20,0,63,.18);
+}
+
+.principleRow{
+  display:grid;
+  grid-template-columns:54px 1fr;
+  gap:16px;
+  padding:28px 0 30px;
+  border-bottom:1px solid rgba(20,0,63,.18);
+}
+
+.principleRow > span{
+  padding-top:7px;
+  color:var(--purple);
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.15em;
+}
+
+.principleRow h3{
+  margin:0 0 10px;
+  font-family:var(--sans);
+  font-size:clamp(26px,2.4vw,38px);
+  font-weight:540;
+  letter-spacing:-.04em;
+}
+
+.principleRow p{
+  margin:0;
+  max-width:650px;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.72;
+}
+
+.locationSection{
+  padding:clamp(72px,7.5vw,108px) 0;
+  background:var(--ink);
+  color:#fff;
+}
+
+.locationGrid{
+  display:grid;
+  grid-template-columns:minmax(0,1.2fr) minmax(300px,.55fr);
+  gap:clamp(50px,8vw,120px);
+  align-items:end;
+}
+
+.lightKicker{
+  margin:0 0 22px;
+  color:#c9c4ff;
+  font-size:10px;
+  font-weight:750;
+  letter-spacing:.2em;
+}
+
+.locationGrid h2{
+  font-size:clamp(48px,5vw,80px);
+}
+
+.locationGrid h2 em{
+  color:#aeb2ff;
+}
+
+.locationCopy > p{
+  margin:0 0 28px;
+  color:rgba(255,255,255,.62);
+  font-size:15px;
+  line-height:1.8;
+}
+
+.contactBits{
+  display:grid;
+  gap:12px;
+  padding-top:20px;
+  border-top:1px solid rgba(255,255,255,.15);
+}
+
+.contactBits span,
+.contactBits a{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#fff;
+  font-size:13px;
+}
+
+.ctaSection{
+  padding:clamp(72px,7.5vw,112px) 0;
+}
+
+.ctaGrid{
+  display:grid;
+  grid-template-columns:minmax(0,1.25fr) minmax(300px,.55fr);
+  gap:clamp(44px,7vw,100px);
+  align-items:end;
+}
+
+.ctaGrid h2{
+  font-size:clamp(48px,5vw,80px);
+}
+
+.ctaSide > p{
+  margin:0 0 26px;
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.8;
+}
+
+.ctaActions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+}
+
+@media (max-width: 1000px){
+  .aboutGrid,
+  .sectionLead,
+  .approachGrid,
+  .locationGrid,
+  .ctaGrid{
+    grid-template-columns:1fr;
+  }
+
+  .sectionLead{
+    gap:22px;
+  }
+
+  .sectionLead :global(.kicker){
+    grid-column:auto;
+  }
+
+  .capabilityGrid{
+    grid-template-columns:1fr;
+  }
+
+  .capabilityCard{
+    min-height:0;
+    border-right:0;
+    border-bottom:1px solid var(--line);
+    padding:24px 0 28px;
+  }
+
+  .capabilityCard:last-child{
+    border-bottom:0;
+  }
+
+  .cardIndex{
+    margin-bottom:34px;
+  }
+
+  .cardLine{
+    left:0;
+    right:0;
+  }
+
+  .approachIntro{
+    position:static;
+  }
+
+  .officeImage{
+    aspect-ratio:16/11;
+  }
+}
+
+@media (max-width: 620px){
+  .aboutSection,
+  .capabilitiesSection,
+  .approachSection,
+  .locationSection,
+  .ctaSection{
+    padding-top:64px;
+    padding-bottom:64px;
+  }
+
+  .aboutCopy h2,
+  .sectionLead h2,
+  .approachIntro h2,
+  .locationGrid h2,
+  .ctaGrid h2{
+    font-size:44px;
+    line-height:.98;
+  }
+
+  .aboutCopy > p:not(:first-child),
+  .sectionLead > p:last-child,
+  .approachIntro > p:last-child,
+  .locationCopy > p,
+  .ctaSide > p{
+    font-size:14px;
+  }
+
+  .officeCaption{
+    display:grid;
+    gap:6px;
+  }
+
+  .officeImage{
+    aspect-ratio:4/3;
+  }
+
+  .principleRow{
+    grid-template-columns:38px 1fr;
+  }
+
+  .principleRow h3{
+    font-size:28px;
+  }
+
+  .ctaActions{
+    display:grid;
+    width:100%;
+  }
+
+  .ctaActions :global(.button){
+    width:100%;
+  }
+}

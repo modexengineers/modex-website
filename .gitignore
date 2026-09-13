@@ -1,0 +1,12 @@
+node_modules
+.next
+out
+.env
+.env.local
+.DS_Store
+*.log
+
+.env.local
+.next/
+node_modules/
+.DS_Store

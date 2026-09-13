@@ -1,0 +1,42 @@
+.header{
+  position:fixed;
+  z-index:1000;
+  top:0;left:0;right:0;
+  height:78px;
+  display:flex;
+  align-items:center;
+  gap:34px;
+  padding:0 clamp(20px,4.6vw,84px);
+  background:rgba(247,245,240,.94);
+  border-bottom:1px solid rgba(20,0,63,.08);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  transition:height .28s ease,box-shadow .28s ease,background .28s ease;
+}
+.scrolled{height:70px;background:rgba(247,245,240,.97);box-shadow:0 8px 30px rgba(20,0,63,.045)}
+.brand{margin-right:auto;display:flex;align-items:center;min-width:0}
+.brand img{width:clamp(150px,12.8vw,205px);height:auto;display:block}
+.desktopNav{display:flex;align-items:center;gap:clamp(22px,2.15vw,34px)}
+.desktopNav a,.portalLink{position:relative;color:#3f3947;font-size:12px;font-weight:650;white-space:nowrap}
+.desktopNav a::after{content:"";position:absolute;left:0;right:0;bottom:-9px;height:1px;background:#5E3DC0;transform:scaleX(0);transform-origin:right;transition:transform .22s ease}
+.desktopNav a:hover::after,.desktopNav a.active::after{transform:scaleX(1);transform-origin:left}
+.actions{display:flex;align-items:center;gap:18px}
+.portalLink{opacity:.64;transition:opacity .2s ease}.portalLink:hover{opacity:1}
+.cta{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 21px;border-radius:999px;background:#14003F;color:white;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.menuButton{display:none;border:0;background:transparent;color:#14003F;width:42px;height:42px;place-items:center;padding:0}
+.mobileMenu{position:fixed;z-index:1400;inset:0;background:#F7F5F0;color:#171421;display:flex;flex-direction:column;padding:0 22px 22px;transform:translate3d(0,-102%,0);visibility:hidden;pointer-events:none;transition:transform .55s cubic-bezier(.76,0,.18,1),visibility .55s}
+.mobileMenu::before{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(94,61,192,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(94,61,192,.045) 1px,transparent 1px);background-size:56px 56px;mask-image:linear-gradient(180deg,#000,transparent 74%)}
+.open{transform:translate3d(0,0,0);visibility:visible;pointer-events:auto}
+.mobileTop{position:relative;z-index:1;height:82px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(20,0,63,.10)}
+.mobileTop img{width:158px;height:auto}.mobileTop button{display:grid;place-items:center;width:42px;height:42px;border:1px solid rgba(20,0,63,.12);border-radius:50%;background:rgba(255,255,255,.62);color:#14003F}
+.mobileBody{position:relative;z-index:1;padding-top:34px}
+.menuEyebrow{margin:0 0 18px;color:#5E3DC0;font-size:9px;font-weight:800;letter-spacing:.22em;text-transform:uppercase}
+.mobileLinks{display:grid;border-top:1px solid rgba(20,0,63,.11)}
+.mobileLinks a{display:grid;grid-template-columns:34px 1fr 24px;align-items:center;gap:10px;min-height:68px;border-bottom:1px solid rgba(20,0,63,.11);color:#1A1720}
+.mobileLinks a>span{font-size:9px;letter-spacing:.12em;color:#9A939F}.mobileLinks strong{font-size:clamp(27px,8vw,36px);font-weight:500;letter-spacing:-.04em}.mobileLinks svg{opacity:.34}.mobileLinks .mobileActive strong{color:#5E3DC0}.mobileLinks .mobileActive svg{opacity:1;color:#5E3DC0}
+.mobileActions{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:auto;padding-top:24px}
+.mobilePrimary,.mobileSecondary{min-height:50px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}.mobilePrimary{background:#14003F;color:white}.mobileSecondary{border:1px solid rgba(20,0,63,.16);background:rgba(255,255,255,.55);color:#14003F}
+.mobileFoot{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:18px;padding-top:22px;margin-top:22px;border-top:1px solid rgba(20,0,63,.10)}
+.mobileFoot span{font-size:8px;color:#5E3DC0;font-weight:800;letter-spacing:.17em}.mobileFoot p{margin:7px 0 0;color:#77717D;font-size:10px;line-height:1.55}
+@media(max-width:900px){.header{height:72px;padding:0 18px}.scrolled{height:66px}.desktopNav,.portalLink,.cta{display:none}.brand img{width:150px}.menuButton{display:grid}.mobileMenu{display:flex}}
+@media(max-width:420px){.mobileMenu{padding-inline:18px}.mobileTop{height:74px}.mobileLinks a{min-height:62px}.mobileActions{grid-template-columns:1fr}.mobileFoot{grid-template-columns:1fr 1fr}.mobileLinks strong{font-size:29px}}
