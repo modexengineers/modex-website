@@ -790,3 +790,10 @@
     font-size:clamp(37px,10.6vw,47px) !important;
   }
 }
+
+/* Remove duplicate mobile stage badge from image */
+@media (max-width: 820px) {
+  .mobileActiveStage {
+    display: none !important;
+  }
+}
