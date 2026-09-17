@@ -8,8 +8,9 @@ import {
 } from "lucide-react";
 import type { EntryCategory, PortalEntry, PortalPayment, PortalProject, PortalRole, ProjectDetail } from "@/lib/portal-types";
 import styles from "@/app/portal/portal.module.css";
+import DocumentsView from "./DocumentsView";
 
-type Tab = "overview" | "entries" | "payments" | "statement" | "settings";
+type Tab = "overview" | "entries" | "payments" | "statement" | "documents" | "settings";
 type LoginMode = "admin" | "client";
 
 type ModalState =
@@ -248,7 +249,7 @@ function LoginScreen({ onLogin }: { onLogin: (role: PortalRole) => Promise<void>
         <div className={styles.loginHeading}><span>{mode === "client" ? "CLIENT ACCESS" : "ADMIN ACCESS"}</span><h2>{mode === "client" ? "View your project" : "Manage project accounts"}</h2><p>{mode === "client" ? "Enter the project code shared by Modex." : "Use the private Modex admin passcode."}</p></div>
         <form onSubmit={submit} className={styles.loginForm}>
           <label>{mode === "client" ? "Project access code" : "Admin passcode"}</label>
-          <input type={mode === "admin" ? "password" : "text"} value={code} onChange={e => setCode(e.target.value.toUpperCase())} placeholder={mode === "client" ? "e.g. MA4821" : "Enter passcode"} autoFocus />
+          <input type={mode === "admin" ? "password" : "text"} value={code} onChange={e => setCode(mode === "client" ? e.target.value.toUpperCase() : e.target.value)} placeholder={mode === "client" ? "Enter your project access code" : "Enter passcode"} autoFocus />
           {error && <p className={styles.formError}>{error}</p>}
           <button className={styles.primaryButton} disabled={busy}>{busy ? "Signing in…" : mode === "client" ? "View project" : "Open admin workspace"}<ArrowRight size={17}/></button>
         </form>
@@ -295,8 +296,8 @@ function ProjectWorkspace({ role, detail, tab, setTab, onAddEntry, onEditEntry, 
   role: PortalRole; detail: ProjectDetail; tab: Tab; setTab: (tab: Tab) => void; onAddEntry: () => void; onEditEntry: (entry: PortalEntry) => void; onAddPayment: () => void; onDeleteEntry: (id: string) => void; onDeletePayment: (id: string) => void; onProjectSaved: () => Promise<void>; onProjectDeleted: () => Promise<void>;
 }) {
   const summary = summarize(detail);
-  const clientTabs: Tab[] = ["overview", "statement", "payments"];
-  const adminTabs: Tab[] = ["overview", "entries", "payments", "statement", "settings"];
+  const clientTabs: Tab[] = ["overview", "statement", "payments", "documents"];
+  const adminTabs: Tab[] = ["overview", "entries", "payments", "statement", "documents", "settings"];
   const tabs = role === "admin" ? adminTabs : clientTabs;
   const safeTab = tabs.includes(tab) ? tab : "overview";
 
@@ -306,7 +307,8 @@ function ProjectWorkspace({ role, detail, tab, setTab, onAddEntry, onEditEntry, 
     {safeTab === "overview" && <Overview role={role} detail={detail} summary={summary} onAddEntry={onAddEntry} onAddPayment={onAddPayment} />}
     {safeTab === "entries" && <EntriesTable detail={detail} role={role} onAddEntry={onAddEntry} onEdit={onEditEntry} onDelete={onDeleteEntry} />}
     {safeTab === "payments" && <PaymentsView detail={detail} role={role} onAddPayment={onAddPayment} onDelete={onDeletePayment} />}
-    {safeTab === "statement" && <StatementView detail={detail} role={role} />}
+    {safeTab === "statement" && <StatementView key={detail.project.id} detail={detail} role={role} />}
+    {safeTab === "documents" && <DocumentsView key={detail.project.id} projectId={detail.project.id} role={role} />}
     {safeTab === "settings" && role === "admin" && <SettingsView project={detail.project} onSaved={onProjectSaved} onDeleted={onProjectDeleted} />}
   </div>;
 }
@@ -350,12 +352,23 @@ function Overview({ role, detail, summary, onAddEntry, onAddPayment }: { role: P
   </>;
 }
 
+function EntryFilters({ query, category, onQuery, onCategory }: { query: string; category: string; onQuery: (value: string) => void; onCategory: (value: string) => void }) {
+  return <div className={styles.filters}>
+    <label><Search size={16}/><input aria-label="Search entries" value={query} onChange={e => onQuery(e.target.value)} placeholder="Search particular, quantity or remark"/></label>
+    <label><Filter size={16}/><select aria-label="Filter entries by category" value={category} onChange={e => onCategory(e.target.value)}><option>All</option>{allCategories.map(c => <option key={c}>{c}</option>)}</select><ChevronDown size={14}/></label>
+  </div>;
+}
+
+function matchesEntry(entry: PortalEntry, query: string, category: string) {
+  return (category === "All" || entry.category === category) && `${entry.particular} ${entry.quantity || ""} ${entry.remarks || ""}`.toLowerCase().includes(query.trim().toLowerCase());
+}
+
 function EntriesTable({ detail, role, onAddEntry, onEdit, onDelete }: { detail: ProjectDetail; role: PortalRole; onAddEntry: () => void; onEdit: (entry: PortalEntry) => void; onDelete: (id: string) => void; }) {
   const [query, setQuery] = useState(""); const [category, setCategory] = useState("All");
-  const filtered = detail.entries.filter(e => (category === "All" || e.category === category) && `${e.particular} ${e.quantity || ""} ${e.remarks || ""}`.toLowerCase().includes(query.toLowerCase()));
+  const filtered = detail.entries.filter(e => matchesEntry(e, query, category));
   return <section className={styles.panel}>
     <div className={styles.tableToolbar}><div><span className={styles.sectionLabel}>ENTRIES</span><h2>Expense & service charge entries</h2></div>{role === "admin" && <button className={styles.primaryButton} onClick={onAddEntry}><Plus size={16}/> Add Entry</button>}</div>
-    <div className={styles.filters}><label><Search size={16}/><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search particular, quantity or remark"/></label><label><Filter size={16}/><select value={category} onChange={e => setCategory(e.target.value)}><option>All</option>{allCategories.map(c => <option key={c}>{c}</option>)}</select><ChevronDown size={14}/></label></div>
+    <EntryFilters query={query} category={category} onQuery={setQuery} onCategory={setCategory}/>
     <div className={styles.tableWrap}><table><thead><tr><th>Date</th><th>Category</th><th>Particular</th><th>Quantity</th><th className={styles.moneyCol}>Amount</th><th>Remarks</th>{role === "admin" && <th/>}</tr></thead><tbody>{filtered.map(entry => <tr key={entry.id}><td>{dateText(entry.entry_date)}</td><td><span className={styles.categoryBadge}>{entry.category}</span></td><td><strong>{entry.particular}</strong></td><td>{entry.quantity || "—"}</td><td className={styles.moneyCol}>{money(entry.amount)}</td><td>{entry.remarks || "—"}</td>{role === "admin" && <td className={styles.rowActions}><button className={styles.editAction} onClick={() => onEdit(entry)} title="Edit entry"><Pencil size={14}/><span>Edit</span></button><button className={styles.deleteAction} onClick={() => onDelete(entry.id)} title="Delete entry"><Trash2 size={14}/><span>Delete</span></button></td>}</tr>)}</tbody></table>{!filtered.length && <p className={styles.emptyText}>No matching entries.</p>}</div>
   </section>;
 }
@@ -369,12 +382,24 @@ function PaymentsView({ detail, role, onAddPayment, onDelete }: { detail: Projec
 }
 
 function StatementView({ detail, role }: { detail: ProjectDetail; role: PortalRole }) {
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("All");
   const summary = summarize(detail);
-  const rows = useMemo(() => [...detail.entries].sort((a,b) => b.entry_date.localeCompare(a.entry_date)), [detail.entries]);
+  const rows = useMemo(() => detail.entries.filter(entry => matchesEntry(entry, query, category)).sort((a,b) => b.entry_date.localeCompare(a.entry_date)), [detail.entries, query, category]);
+  const filteredTotal = rows.reduce((total, entry) => total + Number(entry.amount), 0);
+  const isFiltered = Boolean(query.trim()) || category !== "All";
   return <>
     <div className={styles.statementIntro}><div><span className={styles.sectionLabel}>PROJECT STATEMENT</span><h2>{role === "client" ? "A clear view of every entry" : "Live statement generated from entries"}</h2><p>No manual abstract calculations are required. The totals update automatically when Modex adds or edits an entry.</p></div><div className={styles.statementBalance}><span>{summary.balance < 0 ? "PAYMENT DUE" : "BALANCE AVAILABLE"}</span><strong>{money(Math.abs(summary.balance))}</strong></div></div>
     <MetricCards summary={summary}/>
-    <section className={styles.panel}><div className={styles.tableWrap}><table><thead><tr><th>Date</th><th>Category</th><th>Particular</th><th>Quantity</th><th className={styles.moneyCol}>Amount</th><th>Remarks</th></tr></thead><tbody>{rows.map(e => <tr key={e.id}><td>{dateText(e.entry_date)}</td><td><span className={styles.categoryBadge}>{e.category}</span></td><td><strong>{e.particular}</strong></td><td>{e.quantity || "—"}</td><td className={styles.moneyCol}>{money(e.amount)}</td><td>{e.remarks || "—"}</td></tr>)}</tbody></table></div>
+    <section className={styles.panel}>
+      <EntryFilters query={query} category={category} onQuery={setQuery} onCategory={setCategory}/>
+      <div className={styles.tableToolbar}>
+        <span className={styles.sectionLabel} role="status">Showing {rows.length} of {detail.entries.length} entries</span>
+        {isFiltered && <button className={styles.ghostButton} onClick={() => { setQuery(""); setCategory("All"); }}><X size={14}/> Clear filters</button>}
+        <div className={styles.toolbarTotal}><span>{isFiltered ? "Filtered entries total" : "All entries total"}</span><strong>{money(filteredTotal)}</strong></div>
+      </div>
+      <div className={styles.tableWrap}><table><thead><tr><th>Date</th><th>Category</th><th>Particular</th><th>Quantity</th><th className={styles.moneyCol}>Amount</th><th>Remarks</th></tr></thead><tbody>{rows.map(e => <tr key={e.id}><td>{dateText(e.entry_date)}</td><td><span className={styles.categoryBadge}>{e.category}</span></td><td><strong>{e.particular}</strong></td><td>{e.quantity || "—"}</td><td className={styles.moneyCol}>{money(e.amount)}</td><td>{e.remarks || "—"}</td></tr>)}</tbody></table>{!rows.length && <p className={styles.emptyText}>{detail.entries.length ? "No matching entries. Try another category or clear the search." : "No entries recorded yet."}</p>}</div>
+      {isFiltered && <p className={styles.emptyText}>The project totals below include all entries, regardless of the filters above.</p>}
       <div className={styles.statementTotals}><div><span>Expenses</span><strong>{money(summary.expenseTotal)}</strong></div><div><span>Service Charges</span><strong>{money(summary.serviceCharge)}</strong></div><div><span>Project Cost</span><strong>{money(summary.projectCost)}</strong></div><div><span>Received</span><strong>{money(summary.received)}</strong></div><div className={summary.balance < 0 ? styles.totalDue : styles.totalGood}><span>{summary.balance < 0 ? "Payment Due" : "Balance Available"}</span><strong>{money(Math.abs(summary.balance))}</strong></div></div>
     </section>
   </>;

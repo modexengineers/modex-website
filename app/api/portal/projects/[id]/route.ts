@@ -48,6 +48,7 @@ export async function DELETE(_: Request, context: { params: Promise<{ id: string
     await requireAdmin();
     const db = getPortalDb();
     const { error } = await db.from("portal_projects").delete().eq("id", id);
+    if (error?.code === "23503") return NextResponse.json({ error: "Delete this project's documents from the Documents tab before deleting the project." }, { status: 409 });
     if (error) throw error;
     return NextResponse.json({ ok: true });
   } catch (error) {
