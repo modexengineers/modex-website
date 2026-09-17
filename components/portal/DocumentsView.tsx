@@ -133,10 +133,10 @@ function PdfPages({ url, title }: { url: string; title: string }) {
   useEffect(() => {
     let cancelled = false;
     let loadingTask: { destroy: () => Promise<void> } | null = null;
-    const container = host.current;
-    if (!container) return;
-
     async function renderPdf() {
+      const container = host.current;
+      if (!container) return;
+
       setLoading(true); setError(""); setPageCount(0);
       container.replaceChildren();
       try {
@@ -190,7 +190,7 @@ function PdfPages({ url, title }: { url: string; title: string }) {
     renderPdf();
     return () => {
       cancelled = true;
-      container.replaceChildren();
+      host.current?.replaceChildren();
       void loadingTask?.destroy();
     };
   }, [url, title]);
@@ -324,7 +324,8 @@ function DocumentEditor({ base, document: doc, onClose, onSaved }: { base: strin
       const bytes = await makeImagePdf(images);
       if (current !== sequence.current) return;
       const baseName = images[0].name.replace(/\.(jpe?g|png)$/i, "").replace(/[^a-z0-9-_ ]/gi, "").trim() || "images";
-      const result = new File([bytes], `${baseName}${images.length > 1 ? "-photo-set" : ""}.pdf`, { type: "application/pdf" });
+      const pdfBuffer = Uint8Array.from(bytes).buffer;
+      const result = new File([pdfBuffer], `${baseName}${images.length > 1 ? "-photo-set" : ""}.pdf`, { type: "application/pdf" });
       setPrepared({ file: result, originalSize, imagesChanged: true, pages: images.length, sourceCount: images.length, sourceLabel: images.length === 1 ? "image" : "images" });
       setStatus(""); setProcessing(false);
     } catch (e) {
