@@ -330,15 +330,25 @@ function MetricCards({ summary }: { summary: ReturnType<typeof summarize> }) {
     <Metric icon={<CircleDollarSign size={19}/>} label={balanceLabel} value={money(Math.abs(summary.balance))} tone={summary.balance < 0 ? "due" : "good"} />
   </div>;
 }
-function Metric({ icon, label, value, tone }: { icon: React.ReactNode; label: string; value: string; tone?: "due" | "good" }) {
-  return <div className={`${styles.metricCard} ${tone === "due" ? styles.metricDue : tone === "good" ? styles.metricGood : ""}`}><div className={styles.metricIcon}>{icon}</div><div><span>{label}</span><strong>{value}</strong></div></div>;
+function AdminMetricCards({ summary }: { summary: ReturnType<typeof summarize> }) {
+  const balanceLabel = summary.balance < 0 ? "Payment Due" : summary.balance > 0 ? "Balance Available" : "Account Settled";
+  return <div className={styles.adminMetricGrid}>
+    <Metric icon={<ReceiptIndianRupee size={19}/>} label="Project Cost" value={money(summary.expenseTotal)} description={`Service charges: ${money(summary.serviceCharge)}`} />
+    <Metric icon={<CircleDollarSign size={19}/>} label="Total Cost" value={money(summary.projectCost)} />
+    <Metric icon={<WalletCards size={19}/>} label="Amount Received" value={money(summary.received)} />
+    <Metric icon={<CircleDollarSign size={19}/>} label={balanceLabel} value={money(Math.abs(summary.balance))} tone={summary.balance < 0 ? "due" : "good"} />
+  </div>;
+}
+
+function Metric({ icon, label, value, tone, description }: { icon: React.ReactNode; label: string; value: string; tone?: "due" | "good"; description?: string }) {
+  return <div className={`${styles.metricCard} ${tone === "due" ? styles.metricDue : tone === "good" ? styles.metricGood : ""}`}><div className={styles.metricIcon}>{icon}</div><div><span>{label}</span><strong>{value}</strong>{description && <small className={styles.metricDescription}>{description}</small>}</div></div>;
 }
 
 function Overview({ role, detail, summary, onAddEntry, onAddPayment }: { role: PortalRole; detail: ProjectDetail; summary: ReturnType<typeof summarize>; onAddEntry: () => void; onAddPayment: () => void; }) {
   const recent = detail.entries.slice(0, 6);
   const max = Math.max(...expenseCategories.map(c => summary.byCategory[c] || 0), 1);
   return <>
-    <MetricCards summary={summary}/>
+    {role === "admin" ? <AdminMetricCards summary={summary}/> : <MetricCards summary={summary}/>}
     {role === "admin" && <div className={styles.quickActions}><button className={styles.primaryButton} onClick={onAddEntry}><Plus size={17}/> Add Expense / Charge</button><button className={styles.secondaryButton} onClick={onAddPayment}><CreditCard size={17}/> Record Payment</button></div>}
     <div className={styles.twoColumn}>
       <section className={styles.panel}><div className={styles.panelHead}><div><span className={styles.sectionLabel}>COST BREAKDOWN</span><h2>Where the project cost has gone</h2></div><strong>{money(summary.expenseTotal)}</strong></div>
@@ -390,7 +400,7 @@ function StatementView({ detail, role }: { detail: ProjectDetail; role: PortalRo
   const isFiltered = Boolean(query.trim()) || category !== "All";
   return <>
     <div className={styles.statementIntro}><div><span className={styles.sectionLabel}>PROJECT STATEMENT</span><h2>{role === "client" ? "A clear view of every entry" : "Live statement generated from entries"}</h2><p>No manual abstract calculations are required. The totals update automatically when Modex adds or edits an entry.</p></div><div className={styles.statementBalance}><span>{summary.balance < 0 ? "PAYMENT DUE" : "BALANCE AVAILABLE"}</span><strong>{money(Math.abs(summary.balance))}</strong></div></div>
-    <MetricCards summary={summary}/>
+    {role === "admin" ? <AdminMetricCards summary={summary}/> : <MetricCards summary={summary}/>}
     <section className={styles.panel}>
       <EntryFilters query={query} category={category} onQuery={setQuery} onCategory={setCategory}/>
       <div className={styles.tableToolbar}>
@@ -400,7 +410,7 @@ function StatementView({ detail, role }: { detail: ProjectDetail; role: PortalRo
       </div>
       <div className={styles.tableWrap}><table><thead><tr><th>Date</th><th>Category</th><th>Particular</th><th>Quantity</th><th className={styles.moneyCol}>Amount</th><th>Remarks</th></tr></thead><tbody>{rows.map(e => <tr key={e.id}><td>{dateText(e.entry_date)}</td><td><span className={styles.categoryBadge}>{e.category}</span></td><td><strong>{e.particular}</strong></td><td>{e.quantity || "—"}</td><td className={styles.moneyCol}>{money(e.amount)}</td><td>{e.remarks || "—"}</td></tr>)}</tbody></table>{!rows.length && <p className={styles.emptyText}>{detail.entries.length ? "No matching entries. Try another category or clear the search." : "No entries recorded yet."}</p>}</div>
       {isFiltered && <p className={styles.emptyText}>The project totals below include all entries, regardless of the filters above.</p>}
-      <div className={styles.statementTotals}><div><span>Expenses</span><strong>{money(summary.expenseTotal)}</strong></div><div><span>Service Charges</span><strong>{money(summary.serviceCharge)}</strong></div><div><span>Project Cost</span><strong>{money(summary.projectCost)}</strong></div><div><span>Received</span><strong>{money(summary.received)}</strong></div><div className={summary.balance < 0 ? styles.totalDue : styles.totalGood}><span>{summary.balance < 0 ? "Payment Due" : "Balance Available"}</span><strong>{money(Math.abs(summary.balance))}</strong></div></div>
+      <div className={styles.statementTotals}><div><span>{role === "admin" ? "Project Cost (Expenses)" : "Expenses"}</span><strong>{money(summary.expenseTotal)}</strong></div><div><span>Service Charges</span><strong>{money(summary.serviceCharge)}</strong></div><div><span>{role === "admin" ? "Total Cost" : "Project Cost"}</span><strong>{money(summary.projectCost)}</strong></div><div><span>Received</span><strong>{money(summary.received)}</strong></div><div className={summary.balance < 0 ? styles.totalDue : styles.totalGood}><span>{summary.balance < 0 ? "Payment Due" : "Balance Available"}</span><strong>{money(Math.abs(summary.balance))}</strong></div></div>
     </section>
   </>;
 }
